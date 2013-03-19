@@ -5,7 +5,8 @@
                  [compojure "1.1.5"]
                  [hiccup "1.0.2"]
                  [org.clojure/data.json "0.2.1"]
-                 [com.twinql.clojure/clj-conneg "1.1.0"]]
+                 [com.twinql.clojure/clj-conneg "1.1.0"]
+                 [ring "1.1.8"]]
   :plugins [[lein-ring "0.8.2"]]
   :ring {:handler clojurecart.handler/app}
   :profiles

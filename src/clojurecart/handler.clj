@@ -2,7 +2,8 @@
   (:use compojure.core clojurecart.resources clojurecart.html clojurecart.url clojurecart.mediatypes)
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
-            [com.twinql.clojure.conneg :as conneg]))
+            [com.twinql.clojure.conneg :as conneg]
+            [ring.util.response :as ring]))
 
 (defn render-response [resource headers]
   (if (nil? resource)
@@ -10,12 +11,15 @@
     (let [format (conneg/best-allowed-content-type 
                    (get headers "accept") 
                    (-> resource
-                     (get :produced)))]
+                     (get :produced)))
+          status (get (:response resource) :status 200)]
       (if (nil? format)
         {:status 406}
-        (-> resource
-          (get :response)
-          (get format))))))
+        (-> (ring/response (-> resource
+                 (get :response)
+                 (get format)))
+          (ring/content-type (mediatype-to-s format))
+          (ring/status status))))))
 
 (defroutes app-routes
   (GET "/" 
@@ -33,6 +37,9 @@
   (GET cart-route
         {:keys [headers request-method params]} 
         (render-response (request-method (cart (Integer/parseInt (:id params)))) headers)) 
+  (GET "/favicon.ico"
+       []
+       (ring/file-response "data/image/123.png"))
   (route/not-found "Route Not Found"))
 
 
