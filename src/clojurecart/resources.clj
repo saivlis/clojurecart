@@ -7,7 +7,7 @@
 (defn root []
   {:get
    {:produced #{html}
-    :response {html (html-helper "Welcome to ClojureCart!" (html-link (users-route) {} "All Users"))}}})
+    :response {html (html-helper "Welcome to ClojureCart!" (html-link users-route {} "All Users"))}}})
 
 (defn allusers []
   (let [data '(1 2 3)]
@@ -19,7 +19,7 @@
                             "All Users" 
                             (->> data
                               (map get-user)
-                              (map #(html-link (user-route) % (:name %)))))
+                              (map #(html-link user-route % (:name %)))))
                    json "TODO"}}})))
 
 (defn user [id] 
@@ -41,11 +41,11 @@
                             (str "Carts of " (:name (get-user id))) 
                             (->> data
                               (map get-cart)
-                              (map #(html-link (cart-route) % (:description %)))))
+                              (map #(html-link cart-route % (:description %)))))
                    json (to-json
                             (->> data
                               (map get-cart)
-                              (map #(build-link (cart-route) %))))}}})))
+                              (map #(build-link cart-route %))))}}})))
 
 (defn cart [id] 
   (let [data (get-cart id)] 

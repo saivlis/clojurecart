@@ -23,16 +23,16 @@
   (GET "/" 
        {:keys [headers request-method]} 
        (render-response (root) headers request-method))
-  (GET (users-route) 
+  (GET users-route 
        {:keys [headers request-method]} 
        (render-response (allusers) headers request-method))
-  (GET (user-route) 
+  (GET user-route 
        {:keys [headers request-method params]} 
        (render-response (user (Integer/parseInt (:id params))) headers request-method))
-  (GET (carts-of-user-route) 
+  (GET carts-of-user-route
        {:keys [headers request-method params]} 
        (render-response (carts-of-user (Integer/parseInt (:id params))) headers request-method))
-  (GET (cart-route) 
+  (GET cart-route
         {:keys [headers request-method params]} 
         (render-response (cart (Integer/parseInt (:id params))) headers request-method)) 
   (route/not-found "Route Not Found"))
