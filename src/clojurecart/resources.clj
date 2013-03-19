@@ -4,6 +4,11 @@
 (defn resource [representations]
   {:representations representations})
 
+(defn root []
+  {:get
+   {:produced #{html}
+    :response {html (html-helper "Welcome to ClojureCart!" (html-link (users-route) {} "All Users"))}}})
+
 (defn allusers []
   (let [data '(1 2 3)]
     (if (nil? data)

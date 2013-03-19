@@ -20,7 +20,9 @@
           (get format))))))
 
 (defroutes app-routes
-  (GET "/" [] "Willkommen bei ClojureCarts!")
+  (GET "/" 
+       {:keys [headers request-method]} 
+       (render-response (root) headers request-method))
   (GET (users-route) 
        {:keys [headers request-method]} 
        (render-response (allusers) headers request-method))
