@@ -1,5 +1,6 @@
 (ns clojurecart.persistence
-  (:use clojurecart.couch))
+  (:use clojurecart.couch)
+  (:require [clojure.data.json :as json]))
 
 (defn get-all [dbname]
   (let [db (get-db dbname)
@@ -27,3 +28,10 @@
 
 (defn get-carts-of-user [id]
   (get-view (get-db "carts") "_design/carts/_view/by_user" id))
+
+(defn create-user [user]
+  (create-doc (get-db "users") (json/write-str user)))
+
+(defn create-cart [cart uid]
+  (create-doc (get-db "carts") (json/write-str (assoc cart :uid uid))))
+

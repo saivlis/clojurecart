@@ -34,3 +34,5 @@
         (filter #(= key (:key %)))
         (map #(:id %))))))
 
+(defn create-doc [db doc]
+  (http-post db "application/json" doc))
