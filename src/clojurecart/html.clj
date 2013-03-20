@@ -29,9 +29,9 @@
 (defn user-to-html [user] 
   (html-helper 
     "User" 
-    (str (:name user) " (Id: " (:id user) ") " (html-link carts-of-user-route user "Carts of User"))))
+    (str (:name user) " " (html-link carts-of-user-route user "Carts of User"))))
 
 (defn cart-to-html [cart] 
   (html-helper 
     "Cart" 
-    (str (:description cart) " (Id: " (:id cart) ")")))
+    (str (:description cart))))

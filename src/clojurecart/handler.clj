@@ -35,20 +35,17 @@
   (GET user-route 
        [id :as r]
        (let [headers (:headers r)
-             intId (Integer/parseInt id)
-             res ((:request-method r) (user intId))]
+             res ((:request-method r) (user id))]
          (render-response res headers)))
   (GET carts-of-user-route
        [id :as r]
        (let [headers (:headers r)
-             intId (Integer/parseInt id)
-             res ((:request-method r) (carts-of-user intId))]
+             res ((:request-method r) (carts-of-user id))]
          (render-response res headers)))
   (GET cart-route
        [id :as r]
        (let [headers (:headers r)
-             intId (Integer/parseInt id)
-             res ((:request-method r) (cart intId))]
+             res ((:request-method r) (cart id))]
          (render-response res headers)))
   (GET "/favicon.ico"
        []

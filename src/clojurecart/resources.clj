@@ -10,7 +10,7 @@
     :response {html (html-helper "Welcome to ClojureCart!" (html-link users-route {} "All Users"))}}})
 
 (defn allusers []
-  (let [data '(1 2 3)]
+  (let [data (get-all-users)]
     (if (nil? data)
       nil
       {:get 
