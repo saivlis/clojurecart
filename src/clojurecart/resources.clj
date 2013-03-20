@@ -4,24 +4,31 @@
 (defn resource [representations]
   {:representations representations})
 
-(defn root []
+(defn root [request]
   {:get
    {:produced #{html}
     :response {html (html-helper "Welcome to ClojureCart!" (html-link users-route {} "All Users"))}}})
 
-(defn allusers []
+(defn allusers [request]
   (let [data (get-all-users)]
     (if (nil? data)
       nil
       {:get 
        {:produced #{html json}
         :response {html (all-users-to-html
-                            (->> data
-                              (map get-user)
-                              (map #(html-link user-route % (:name %)))))
-                   json "TODO"}}})))
+                          (->> data
+                            (map get-user)
+                            (map #(html-link user-route % (:name %)))))
+                   json "TODO"}}
+       :post {:consumed #{urlenc}
+              :produced #{html}
+              :response {:status 201
+                         html (let [body (slurp (:body request))]
+                                (if (empty? body) 
+                                  (str (:params request))
+                                  body))}}})))
 
-(defn user [id] 
+(defn user [request id] 
   (let [data (get-user id)] 
     (if (nil? data) 
       nil
@@ -30,7 +37,7 @@
         :response {html (user-to-html data)
                    json (to-json data)}}})))
 
-(defn carts-of-user [id] 
+(defn carts-of-user [request id] 
   (let [data (get-carts-of-user id)] 
     (if (nil? data) 
       nil
@@ -46,7 +53,7 @@
                               (map get-cart)
                               (map #(build-link cart-route %))))}}})))
 
-(defn cart [id] 
+(defn cart [request id] 
   (let [data (get-cart id)] 
     (if (nil? data)
       nil
