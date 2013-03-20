@@ -32,7 +32,7 @@
   (get-view (get-db "carts") "_design/carts/_view/by_user" id))
 
 (defn create-user [user]
-  (create-doc (get-db "users") (json/write-str user)))
+  (:id (json/read-json (:body (create-doc (get-db "users") (json/write-str user))))))
 
 (defn create-cart [cart uid]
   (create-doc (get-db "carts") (json/write-str (assoc cart :uid uid))))

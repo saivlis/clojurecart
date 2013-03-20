@@ -12,12 +12,10 @@
   (let [headers (:headers request)
         meth (:request-method request)
         resource (meth res)
-        response (:response resource)
         format (conneg/best-allowed-content-type 
                  (get headers "accept") 
                  (-> resource
                    (get :produced)))
-        status (get response :status 200)
         consumable (set (map mediatype-to-s (:consumed resource)))]
     (if (nil? resource)
       {:status 404}
@@ -25,36 +23,38 @@
         {:status 415}
         (if (nil? format)
           {:status 406}
-          (-> (ring/response 
-                (-> response
-                  (get format)))
-            (ring/content-type (mediatype-to-s format))
-            (ring/status status)))))))
+          (let [response ((:response resource) request)
+                status (get response :status 200)]
+            (-> (ring/response 
+                  (-> response
+                    (get format)))
+              (ring/content-type (mediatype-to-s format))
+              (ring/status status))))))))
 
 (defroutes app-routes
   (GET "/" 
        [:as request]
-       (let [res (root request)]
+       (let [res (root)]
          (render-response res request)))
   (GET users-route 
        [:as request]
-       (let [res (allusers request)]
+       (let [res (allusers)]
          (render-response res request)))
   (POST users-route
         [:as request]
-         (let [res (allusers request)]
+         (let [res (allusers)]
          (render-response res request)))
   (GET user-route 
        [id :as request]
-       (let [res (user request id)]
+       (let [res (user id)]
          (render-response res request)))
   (GET carts-of-user-route
        [id :as request]
-       (let [res (carts-of-user request id)]
+       (let [res (carts-of-user id)]
          (render-response res request)))
   (GET cart-route
        [id :as request]
-       (let [res (cart request id)]
+       (let [res (cart id)]
          (render-response res request)))
   (GET "/favicon.ico"
        []
