@@ -48,7 +48,14 @@
                    json (to-json
                           (->> data
                             (map get-cart)
-                            (map #(build-link cart-route %))))})}))})
+                            (map #(build-link cart-route %))))})}))
+   :post {:consumed #{urlenc}
+          :produced #{html}
+          :response (fn [request] 
+                      (let [description (:description (:params request))
+                            newId (create-cart {:description description} id)]
+                        {:status 201
+                         html (cart-to-html (get-cart newId))}))}})
 
 (defn cart [id] 
   {:get

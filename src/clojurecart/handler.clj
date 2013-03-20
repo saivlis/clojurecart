@@ -52,6 +52,10 @@
        [id :as request]
        (let [res (carts-of-user id)]
          (render-response res request)))
+  (POST carts-of-user-route
+        [id :as request]
+         (let [res (carts-of-user id)]
+         (render-response res request)))
   (GET cart-route
        [id :as request]
        (let [res (cart id)]

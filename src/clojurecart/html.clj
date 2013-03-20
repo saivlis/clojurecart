@@ -30,8 +30,14 @@
 
 (defn user-to-html [user] 
   (html-helper 
-    "User" 
-    (str (:name user) " " (html-link carts-of-user-route user "Carts of User"))))
+    "User"
+    (html
+      [:p (str (:name user) " " (html-link carts-of-user-route user "Carts of User"))]
+      (form-to 
+        [:post (build-link carts-of-user-route user)]
+        (text-field "description")
+        [:br]
+        (submit-button "Create New Cart")))))
 
 (defn cart-to-html [cart] 
   (html-helper 
