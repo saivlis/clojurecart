@@ -15,8 +15,7 @@
       nil
       {:get 
        {:produced #{html json}
-        :response {html (list-with-title-to-html 
-                            "All Users" 
+        :response {html (all-users-to-html
                             (->> data
                               (map get-user)
                               (map #(html-link user-route % (:name %)))))

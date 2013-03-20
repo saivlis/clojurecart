@@ -1,5 +1,5 @@
 (ns clojurecart.html
-  (:use hiccup.core noir.core clojurecart.url hiccup.element))
+  (:use hiccup.core noir.core clojurecart.url hiccup.element hiccup.form))
 
 (defn html-helper [title body] 
   (html 
@@ -10,7 +10,9 @@
       [:h1 title] 
       body]]))
 
-(defn html-link [url args content] (html (link-to (build-link url args) content)))
+(defn html-link 
+  ([url content] (html (link-to (build-link url) content)))
+  ([url args content] (html (link-to (build-link url args) content))))
 
 
 (defn create-link [url args] 
@@ -35,3 +37,14 @@
   (html-helper 
     "Cart" 
     (str (:description cart))))
+
+(defn all-users-to-html [list]
+  (html-helper 
+    "All Users" 
+    (html 
+      (unordered-list list)
+      (form-to 
+        [:post (build-link users-route)]
+        (text-field "name")
+        [:br]
+        (submit-button "Create User")))))
