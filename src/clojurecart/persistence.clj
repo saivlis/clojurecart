@@ -13,9 +13,11 @@
   (let [db (get-db type)
         doc (get-doc db id)
         did (:_id doc)]
-  (-> doc
-    (assoc :id did)
-    (dissoc :_id))))
+    (if (nil? doc)
+      nil
+      (-> doc
+        (assoc :id did)
+        (dissoc :_id)))))
 
 (defn get-all-users []
   (get-all "users"))

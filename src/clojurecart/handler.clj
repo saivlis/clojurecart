@@ -5,26 +5,31 @@
             [com.twinql.clojure.conneg :as conneg]
             [ring.util.response :as ring]))
 
-(defn render-response [resource request]
-  (if (nil? resource)
-    {:status 404}
-    (let [headers (:headers request)
-          meth (:request-method request)
-          format (conneg/best-allowed-content-type 
-                   (get headers "accept") 
-                   (-> resource
-                     (get meth)
-                     (get :produced)))
-          status (get (:response resource) :status 200)]
-      (if (nil? format)
-        {:status 406}
-        (-> (ring/response 
-              (-> resource
-                (get meth)
-                (get :response)
-                (get format)))
-          (ring/content-type (mediatype-to-s format))
-          (ring/status status))))))
+(defn has-body? [meth]
+  (contains? #{:post :put} meth))
+
+(defn render-response [res request]
+  (let [headers (:headers request)
+        meth (:request-method request)
+        resource (meth res)
+        response (:response resource)
+        format (conneg/best-allowed-content-type 
+                 (get headers "accept") 
+                 (-> resource
+                   (get :produced)))
+        status (get response :status 200)
+        consumable (set (map mediatype-to-s (:consumed resource)))]
+    (if (nil? resource)
+      {:status 404}
+      (if (and (has-body? meth) (not (contains? consumable (:content-type request))))
+        {:status 415}
+        (if (nil? format)
+          {:status 406}
+          (-> (ring/response 
+                (-> response
+                  (get format)))
+            (ring/content-type (mediatype-to-s format))
+            (ring/status status)))))))
 
 (defroutes app-routes
   (GET "/" 
