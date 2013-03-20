@@ -1,6 +1,10 @@
 # clojurecart
 
-FIXME
+start with:
+lein ring server-headless
+
+open in a browser:
+http://localhost:3000
 
 ## Prerequisites
 
