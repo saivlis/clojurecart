@@ -23,25 +23,37 @@
 
 (defroutes app-routes
   (GET "/" 
-       {:keys [headers request-method]} 
-       (render-response (request-method (root)) headers))
+       [:as r]
+       (let [headers (:headers r)
+             res ((:request-method r) (root))]
+         (render-response res headers)))
   (GET users-route 
-       {:keys [headers request-method]} 
-       (render-response (request-method (allusers)) headers))
+       [:as r]
+       (let [headers (:headers r)
+             res ((:request-method r) (allusers))]
+         (render-response res headers)))
   (GET user-route 
-       {:keys [headers request-method params]} 
-       (render-response (request-method (user (Integer/parseInt (:id params)))) headers))
+       [id :as r]
+       (let [headers (:headers r)
+             intId (Integer/parseInt id)
+             res ((:request-method r) (user intId))]
+         (render-response res headers)))
   (GET carts-of-user-route
-       {:keys [headers request-method params]} 
-       (render-response (request-method (carts-of-user (Integer/parseInt (:id params)))) headers))
+       [id :as r]
+       (let [headers (:headers r)
+             intId (Integer/parseInt id)
+             res ((:request-method r) (carts-of-user intId))]
+         (render-response res headers)))
   (GET cart-route
-        {:keys [headers request-method params]} 
-        (render-response (request-method (cart (Integer/parseInt (:id params)))) headers)) 
+       [id :as r]
+       (let [headers (:headers r)
+             intId (Integer/parseInt id)
+             res ((:request-method r) (cart intId))]
+         (render-response res headers)))
   (GET "/favicon.ico"
        []
        (ring/file-response "data/image/123.png"))
   (route/not-found "Route Not Found"))
-
 
 (def app
   (handler/site app-routes))
