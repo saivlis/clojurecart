@@ -32,7 +32,7 @@
                    json (to-json data)}}})))
 
 (defn carts-of-user [id] 
-  (let [data '(2 3 4 5)] 
+  (let [data (get-carts-of-user id)] 
     (if (nil? data) 
       nil
       {:get 

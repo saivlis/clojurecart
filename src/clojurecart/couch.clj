@@ -20,3 +20,17 @@
     (if (= 200 (:status doc))
       (json/read-json (:body doc))
       nil)))
+
+(defn get-view
+  ([db view] 
+    (let [doc (get-doc db view)]
+      (->> doc
+        (:rows)
+        (map #(:id %)))))
+  ([db view key] 
+    (let [doc (get-doc db view)]
+      (->> doc
+        (:rows)
+        (filter #(= key (:key %)))
+        (map #(:id %))))))
+

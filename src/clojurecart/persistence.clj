@@ -24,3 +24,6 @@
 
 (defn get-cart [id] 
   (get-couch-doc "carts" id))
+
+(defn get-carts-of-user [id]
+  (get-view (get-db "carts") "_design/carts/_view/by_user" id))
