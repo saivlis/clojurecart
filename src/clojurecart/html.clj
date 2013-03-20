@@ -16,15 +16,15 @@
 (defn create-link [url args] 
   (url-for* url args))
 
-(defn list-to-html [list] 
-  (list-with-title-to-html "List" list))
-
 (defn list-with-title-to-html [title list] 
   (html-helper 
     title 
     (if (empty? list)
       "No entries found"
       (unordered-list list))))
+
+(defn list-to-html [list] 
+  (list-with-title-to-html "List" list))
 
 (defn user-to-html [user] 
   (html-helper 
