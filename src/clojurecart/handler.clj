@@ -9,6 +9,11 @@
 (defn has-body? [meth]
   (contains? #{:post :put} meth))
 
+(defn add-header [resp [name value]] (ring/header resp name value))
+
+(defn add-headers [resp headers]
+  (reduce add-header resp headers))
+
 (defn render-response [res request]
   (let [headers (:headers request)
         meth (:request-method request)]
@@ -31,7 +36,8 @@
                       (-> response
                         (get format)))
                   (ring/content-type (mediatype-to-s format))
-                  (ring/status (get response :status 200)))))))))))
+                  (ring/status (get response :status 200))
+                  (add-headers (:headers response)))))))))))
 
 (defroutes app-routes
   (ANY "/" 

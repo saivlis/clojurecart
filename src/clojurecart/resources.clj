@@ -22,12 +22,14 @@
                               (map #(html-link user-route % (:name %)))))
                      json "TODO"})))}
    :post {:consumed #{urlenc}
-          :produced #{html}
+          :produced #{html json}
           :response (fn [request] 
                       (let [name (:name (:params request))
                             newId (create-user {:name name})]
-                        {:status 201
-                         html (user-to-html (get-user newId))}))}})
+                        {:status 302
+                         :headers [["Location" (build-link user-route {:id newId})]]
+                         html ""
+                         json ""}))}})
 
 (defn user [id] 
   {:get
@@ -60,7 +62,8 @@
           :response (fn [request] 
                       (let [description (:description (:params request))
                             newId (create-cart {:description description} id)]
-                        {:status 201
+                        {:status 302
+                         :headers [["Location" (build-link cart-route {:id newId})]]
                          html (cart-to-html (get-cart newId))}))}})
 
 (defn cart [id] 
