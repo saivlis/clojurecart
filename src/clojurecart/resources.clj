@@ -4,19 +4,23 @@
 (defn root []
   {:get
    {:produced #{html}
-    :response (fn [request] {html (html-helper "Welcome to ClojureCart!" (html-link users-route {} "All Users"))})}})
+    :response (fn [request] 
+                {html (html-helper 
+                        "Welcome to ClojureCart!" 
+                        (html-link users-route {} "All Users"))})}})
 
 (defn allusers []
   {:get 
-   (let [data (get-all-users)]
-     (if (nil? data)
-       nil
-       {:produced #{html json}
-        :response (fn [request] {html (all-users-to-html
-                          (->> data
-                            (map get-user)
-                            (map #(html-link user-route % (:name %)))))
-                   json "TODO"})}))
+   {:produced #{html json}
+    :response (fn [request]   
+                (let [data (get-all-users)]
+                  (if (nil? data)
+                    nil
+                    {html (all-users-to-html
+                            (->> data
+                              (map get-user)
+                              (map #(html-link user-route % (:name %)))))
+                     json "TODO"})))}
    :post {:consumed #{urlenc}
           :produced #{html}
           :response (fn [request] 
@@ -27,28 +31,30 @@
 
 (defn user [id] 
   {:get
-   (let [data (get-user id)] 
-     (if (nil? data) 
-       nil
-       {:produced #{html json}
-        :response (fn [request] {html (user-to-html data)
-                   json (to-json data)})} ))})
+   {:produced #{html json}
+    :response (fn [request] 
+                (let [data (get-user id)] 
+                  (if (nil? data) 
+                    nil
+                    {html (user-to-html data)
+                     json (to-json data)})))}})
 
 (defn carts-of-user [id] 
   {:get 
-   (let [data (get-carts-of-user id)] 
-     (if (nil? data) 
-       nil
-       {:produced #{html json}
-        :response (fn [request] {html (list-with-title-to-html
-                          (str "Carts of " (:name (get-user id))) 
-                          (->> data
-                            (map get-cart)
-                            (map #(html-link cart-route % (:description %)))))
-                   json (to-json
-                          (->> data
-                            (map get-cart)
-                            (map #(build-link cart-route %))))})}))
+   {:produced #{html json}
+    :response (fn [request] 
+                (let [data (get-carts-of-user id)] 
+                  (if (nil? data) 
+                    nil
+                    {html (list-with-title-to-html
+                            (str "Carts of " (:name (get-user id))) 
+                            (->> data
+                              (map get-cart)
+                              (map #(html-link cart-route % (:description %)))))
+                     json (to-json
+                            (->> data
+                              (map get-cart)
+                              (map #(build-link cart-route %))))})))}
    :post {:consumed #{urlenc}
           :produced #{html}
           :response (fn [request] 
@@ -59,10 +65,11 @@
 
 (defn cart [id] 
   {:get
-   (let [data (get-cart id)] 
-     (if (nil? data)
-       nil
-       {:produced #{html json}
-        :response (fn [request] {html (cart-to-html data)
-                   json (to-json data)})}))})
+   {:produced #{html json}
+    :response (fn [request] 
+                (let [data (get-cart id)] 
+                  (if (nil? data)
+                    nil
+                    {html (cart-to-html data)
+                     json (to-json data)})))}})
 

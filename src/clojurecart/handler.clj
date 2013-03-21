@@ -2,6 +2,7 @@
   (:use compojure.core clojurecart.resources clojurecart.html clojurecart.url clojurecart.mediatypes)
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
+            [compojure.core :as core]
             [com.twinql.clojure.conneg :as conneg]
             [ring.util.response :as ring]))
 
@@ -10,56 +11,44 @@
 
 (defn render-response [res request]
   (let [headers (:headers request)
-        meth (:request-method request)
-        resource (meth res)
-        format (conneg/best-allowed-content-type 
-                 (get headers "accept") 
-                 (-> resource
-                   (get :produced)))
-        consumable (set (map mediatype-to-s (:consumed resource)))]
-    (if (nil? resource)
-      {:status 404}
-      (if (and (has-body? meth) (not (contains? consumable (:content-type request))))
-        {:status 415}
-        (if (nil? format)
-          {:status 406}
-          (let [response ((:response resource) request)
-                status (get response :status 200)]
-            (-> (ring/response 
-                  (-> response
-                    (get format)))
-              (ring/content-type (mediatype-to-s format))
-              (ring/status status))))))))
+        meth (:request-method request)]
+    (if (nil? (meth res))
+      {:status 405}
+      (let [resource (meth res)
+            format (conneg/best-allowed-content-type 
+                     (get headers "accept") 
+                     (-> resource
+                       (get :produced)))
+            consumable (set (map mediatype-to-s (:consumed resource)))]
+        (if (and (has-body? meth) (not (contains? consumable (:content-type request))))
+          {:status 415}
+          (if (nil? format)
+            {:status 406}
+            (let [response ((:response resource) request)]
+              (if (nil? response)
+                {:status 404}
+                (-> (ring/response 
+                      (-> response
+                        (get format)))
+                  (ring/content-type (mediatype-to-s format))
+                  (ring/status (get response :status 200)))))))))))
 
 (defroutes app-routes
-  (GET "/" 
+  (ANY "/" 
        [:as request]
-       (let [res (root)]
-         (render-response res request)))
-  (GET users-route 
+       (render-response (root) request))
+  (ANY users-route 
        [:as request]
-       (let [res (allusers)]
-         (render-response res request)))
-  (POST users-route
-        [:as request]
-         (let [res (allusers)]
-         (render-response res request)))
-  (GET user-route 
+       (render-response (allusers) request))
+  (ANY user-route 
        [id :as request]
-       (let [res (user id)]
-         (render-response res request)))
-  (GET carts-of-user-route
+       (render-response (user id) request))
+  (ANY carts-of-user-route
        [id :as request]
-       (let [res (carts-of-user id)]
-         (render-response res request)))
-  (POST carts-of-user-route
-        [id :as request]
-         (let [res (carts-of-user id)]
-         (render-response res request)))
-  (GET cart-route
+       (render-response (carts-of-user id) request))
+  (ANY cart-route
        [id :as request]
-       (let [res (cart id)]
-         (render-response res request)))
+       (render-response (cart id) request))
   (GET "/favicon.ico"
        []
        (ring/file-response "data/image/123.png"))
