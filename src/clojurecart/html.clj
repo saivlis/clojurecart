@@ -1,6 +1,10 @@
 (ns clojurecart.html
   (:use hiccup.core noir.core clojurecart.url hiccup.element hiccup.form))
 
+(defn html-link 
+  ([url content] (html (link-to (build-link url) content)))
+  ([url args content] (html (link-to (build-link url args) content))))
+
 (defn html-helper [title body] 
   (html 
     [:html
@@ -10,11 +14,6 @@
       [:header (html-link users-route "All users")]
       [:h1 title] 
       body]]))
-
-(defn html-link 
-  ([url content] (html (link-to (build-link url) content)))
-  ([url args content] (html (link-to (build-link url args) content))))
-
 
 (defn create-link [url args] 
   (url-for* url args))
