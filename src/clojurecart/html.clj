@@ -42,7 +42,8 @@
 (defn cart-to-html [cart] 
   (html-helper 
     "Cart" 
-    (str (:description cart))))
+    (html [:p (str "Description: " (:description cart))] 
+          [:p (html-link user-route {:id (:uid cart)} "Owner")])))
 
 (defn all-users-to-html [list]
   (html-helper 
