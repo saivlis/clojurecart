@@ -7,6 +7,7 @@
      [:head 
       [:title title]]
      [:body 
+      [:header (html-link users-route "All users")]
       [:h1 title] 
       body]]))
 
