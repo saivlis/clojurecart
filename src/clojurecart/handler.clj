@@ -17,6 +17,7 @@
 (defn render-response [res request]
   (let [headers (:headers request)
         meth (:request-method request)]
+    (try 
     (if (nil? (meth res))
       {:status 405}
       (let [resource (meth res)
@@ -37,7 +38,8 @@
                         (get format)))
                   (ring/content-type (mediatype-to-s format))
                   (ring/status (get response :status 200))
-                  (add-headers (:headers response)))))))))))
+                  (add-headers (:headers response)))))))))
+  (catch Exception e {:status 503 :body (.getMessage e)}))))
 
 (defroutes app-routes
   (ANY "/" 
