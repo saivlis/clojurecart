@@ -8,5 +8,9 @@
       (let [methname (:_method (:params request))
             meth (if (= "DELETE" methname) :delete (if (= "PUT" methname) :put))]
         (if meth 
-          (app (assoc request :request-method meth))))
+          (app (assoc (assoc request 
+                             :params  
+                             (dissoc (:params request) :_method)) 
+                      :request-method 
+                      meth))))
       (app request))))
