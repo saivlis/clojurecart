@@ -83,4 +83,19 @@
                     (if result {:status 200
                                 html (html-helper "Cart deleted" "")}))
                   (catch clojurecart.exception.ConflictException e {:status 409 
+                                                                    html (.getMessage e)})))}
+   :put
+   {:produced #{html}
+    :consumed #{urlenc}
+    :response (fn [request]
+                (try 
+                  (let [params (:params request)
+                        newCart {:_id id 
+                                 :_rev (:rev params)
+                                 :description (:description params)
+                                 :uid (:uid params)
+                                 }
+                        data (update-cart id newCart)]
+                    {html (cart-to-html data)})
+                  (catch clojurecart.exception.ConflictException e {:status 409 
                                                                     html (.getMessage e)})))}})

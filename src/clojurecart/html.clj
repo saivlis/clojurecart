@@ -43,9 +43,20 @@
   (html-helper 
     "Cart" 
     (html [:p (str "Description: " (:description cart))] 
-          [:p (html-link user-route {:id (:uid cart)} "Owner")]
+          (if (:uid cart) 
+            [:p (html-link user-route {:id (:uid cart)} "Owner")] 
+            [:p "Unknown Owner"])
           (form-to 
-            [:delete (str (build-link cart-route cart) "?rev=" (:_rev cart))]
+            [:put (build-link cart-route cart)]
+            (hidden-field "rev" (:_rev cart))
+            (hidden-field "uid" (:uid cart))
+            "Description: "
+            (text-field "description" (:description cart))
+            [:br]            
+            (submit-button "Update this Cart"))
+          (form-to 
+            [:delete (build-link cart-route cart)]
+            (hidden-field "rev" (:_rev cart))
             (submit-button "Delete this Cart")))))
 
 (defn all-users-to-html [list]
