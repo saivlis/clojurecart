@@ -63,7 +63,7 @@
        (ring/file-response "data/image/123.png"))
   (route/not-found "Route Not Found"))
 
-(defn handle-html-put-delete-forms [app]
+(defn wrap-html-put-delete-forms [app]
   (fn [request]
     (if (and (= :post (:request-method request)) 
              (= (mediatype-to-s urlenc) (:content-type request))
@@ -75,4 +75,4 @@
       (app request))))
 
 (def app
-    (handler/site (handle-html-put-delete-forms app-routes)))
+    (handler/site (wrap-html-put-delete-forms app-routes)))
