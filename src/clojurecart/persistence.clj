@@ -3,16 +3,13 @@
   (:require [clojure.data.json :as json]))
 
 (defn get-all [dbname]
-  (try 
     (let [db (get-db dbname)
         all (get-doc db "_all_docs")]
     (->> all
     :rows
-    (map #(:id %))))
-  (catch java.net.ConnectException e (throw (new Exception "Database not available")))))
+    (map #(:id %)))))
 
 (defn get-couch-doc [type id]
-  (try 
     (let [db (get-db type)
           doc (get-doc db id)
           did (:_id doc)]
@@ -21,15 +18,18 @@
         (-> doc
           (assoc :id did)
           (dissoc :_id))))
-  (catch java.net.ConnectException e (throw (new Exception "Database not available" e)))))
+)
 
+(defn delete-couch-doc [type id rev]
+    (let [db (get-db type)]
+      (delete-doc db id rev))
+)
 (defn get-couch-view 
   ([dbname view] 
-    (try (get-view (get-db dbname) view)
-      (catch java.net.ConnectException e (throw (new Exception "Database not available" e)))))
+(get-view (get-db dbname) view))
   ([dbname view key] 
-    (try (get-view (get-db dbname) view key)
-      (catch java.net.ConnectException e (throw (new Exception "Database not available" e))))))
+    (get-view (get-db dbname) view key)
+    ))
 
 (defn get-all-users []
   (get-all "users"))
@@ -39,6 +39,12 @@
 
 (defn get-cart [id] 
   (get-couch-doc "carts" id))
+
+(defn delete-cart [id rev]
+  (try 
+    (delete-couch-doc "carts" id rev)
+    (catch clojurecart.exception.ConflictException e (throw (new clojurecart.exception.ConflictException "Cart has been changed recently")))
+    (catch clojurecart.exception.DatabaseException e (throw (new clojurecart.exception.DatabaseException "Cart could not be deleted")))))
 
 (defn get-carts-of-user [id]
   (get-couch-view  "carts" "_design/carts/_view/by_user" id))

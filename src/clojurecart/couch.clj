@@ -21,6 +21,14 @@
       (json/read-json (:body doc))
       nil)))
 
+(defn delete-doc [db docId rev]
+  (let [doc (http-delete (str db "/" docId "?rev=" rev))]
+    (if (= 200 (:status doc))
+      true
+      (if (= 409 (:status doc))
+        (throw (new clojurecart.exception.ConflictException "The document has been changed recently."))       
+        (throw (new clojurecart.exception.DatabaseException (:error doc)))))))
+
 (defn get-view
   ([db view] 
     (let [doc (get-doc db view)]

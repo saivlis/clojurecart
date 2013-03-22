@@ -10,3 +10,6 @@
 
 (defn http-post [url content-type body] 
   (hc/post url {:body body :content-type content-type} {:throw-exceptions false}))
+
+(defn http-delete [url] 
+  (hc/delete url {:throw-exceptions false}))

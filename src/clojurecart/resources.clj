@@ -74,5 +74,13 @@
                   (if (nil? data)
                     nil
                     {html (cart-to-html data)
-                     json (to-json data)})))}})
-
+                     json (to-json data)})))}
+   :delete
+   {:produced #{html}
+    :response (fn [request]
+                (try 
+                  (let [result (delete-cart id (:rev (:params request)))]
+                    (if result {:status 200
+                                html (html-helper "Cart deleted" "")}))
+                  (catch clojurecart.exception.ConflictException e {:status 409 
+                                                                    html (.getMessage e)})))}})

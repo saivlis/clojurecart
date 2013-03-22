@@ -43,7 +43,10 @@
   (html-helper 
     "Cart" 
     (html [:p (str "Description: " (:description cart))] 
-          [:p (html-link user-route {:id (:uid cart)} "Owner")])))
+          [:p (html-link user-route {:id (:uid cart)} "Owner")]
+          (form-to 
+            [:delete (str (build-link cart-route cart) "?rev=" (:_rev cart))]
+            (submit-button "Delete this Cart")))))
 
 (defn all-users-to-html [list]
   (html-helper 

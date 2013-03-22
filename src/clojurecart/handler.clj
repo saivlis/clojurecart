@@ -39,7 +39,8 @@
                   (ring/content-type (mediatype-to-s format))
                   (ring/status (get response :status 200))
                   (add-headers (:headers response)))))))))
-  (catch Exception e {:status 503 :body (.getMessage e)}))))
+  (catch java.net.ConnectException e {:status 503 :body (.getMessage e)})
+  (catch clojurecart.exception.DatabaseException e {:status 500 :body (.getMessage e)}))))
 
 (defroutes app-routes
   (ANY "/" 
