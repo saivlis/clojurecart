@@ -1,5 +1,5 @@
 (ns clojurecart.handler
-  (:use compojure.core clojurecart.resources clojurecart.html clojurecart.url clojurecart.mediatypes)
+  (:use compojure.core clojurecart.resources clojurecart.html clojurecart.url clojurecart.mediatypes html_forms_middleware)
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
             [compojure.core :as core]
@@ -62,17 +62,6 @@
        []
        (ring/file-response "data/image/123.png"))
   (route/not-found "Route Not Found"))
-
-(defn wrap-html-put-delete-forms [app]
-  (fn [request]
-    (if (and (= :post (:request-method request)) 
-             (= (mediatype-to-s urlenc) (:content-type request))
-             (contains? (:params request) :_method))
-      (let [methname (:_method (:params request))
-            meth (if (= "DELETE" methname) :delete (if (= "PUT" methname) :put))]
-        (if meth 
-          (app (assoc request :request-method meth))))
-      (app request))))
 
 (def app
     (handler/site (wrap-html-put-delete-forms app-routes)))
