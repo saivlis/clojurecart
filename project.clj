@@ -9,7 +9,8 @@
                  [ring "1.1.8"]
                  [clj-http "0.6.5"]]
   :plugins [[lein-ring "0.8.2"]]
-  :ring {:handler clojurecart.handler/app}
+  :ring {:handler clojurecart.handler/app
+         :init clojurecart.handler/init}
   :profiles
   {:dev {:dependencies [[ring-mock "0.1.3"]]}}
   :java-source-path "java-src")

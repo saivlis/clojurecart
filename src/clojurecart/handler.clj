@@ -1,5 +1,11 @@
 (ns clojurecart.handler
-  (:use compojure.core clojurecart.resources clojurecart.html clojurecart.url clojurecart.mediatypes html_forms_middleware)
+  (:use compojure.core 
+        clojurecart.resources 
+        clojurecart.html 
+        clojurecart.url 
+        clojurecart.mediatypes
+        clojurecart.persistence
+        html_forms_middleware)
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
             [compojure.core :as core]
@@ -65,3 +71,6 @@
 
 (def app
     (handler/site (wrap-html-put-delete-forms app-routes)))
+
+(defn init []
+  (init-db))

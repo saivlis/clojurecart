@@ -1,5 +1,6 @@
 (ns clojurecart.persistence
-  (:use clojurecart.couch)
+  (:use clojurecart.couch
+        clojurecart.httpclient)
   (:require [clojure.data.json :as json]))
 
 (defn get-all [dbname]
@@ -74,3 +75,40 @@
 (defn create-cart [cart uid]
   (:id (json/read-json (:body (create-doc (get-db "carts") (json/write-str (assoc cart :uid uid)))))))
 
+(defn database-running? [] 
+  (try
+    (http-get db-location)
+    true
+  (catch java.net.ConnectException e false)))
+
+(defn check-db [name] 
+  (let [dbname (str db-location name)]
+    (if (= 404
+           (->>
+             (http-get dbname)
+             (:status)))
+      (do 
+        (http-put dbname)
+        dbname)
+      dbname)))
+
+(defn check-carts-views []
+  (if (= 404 (:status (http-get (str (get-db "carts") "/" "_design/carts"))))
+    (http-put (str (get-db "carts") "/" "_design/carts")
+                         "application/json"
+                         (json/write-str 
+                           {"_id" "_design/carts"
+                            "views" {
+                                     "all" { "map" "function(doc) { emit(null, doc) }"}
+                                     "by_user" {"map" "function(doc) { emit(doc.uid, doc) }"}
+                                     }
+                            "language" "javascript"}))))
+(defn check-databases-and-view [] 
+  (check-db "users")
+  (check-db "carts")
+  (check-carts-views))
+
+(defn init-db []
+  (if (database-running?)
+    (check-databases-and-view)
+    (.println System/out "ERROR: No Database running!")))

@@ -10,9 +10,7 @@
            (->>
              (http-get dbname)
              (:status)))
-      (do 
-        (http-put dbname)
-        dbname)
+      (throw (new clojurecart.exception.DatabaseException "Database does not exist"))
       dbname)))
 
 (defn get-doc 
